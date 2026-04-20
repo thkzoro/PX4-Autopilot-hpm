@@ -45,6 +45,11 @@
 // #include <stm32_rtc.h>
 #include <nuttx/board.h>
 
+#include "hpm_bgpr_drv.h"
+#include "hpm_soc_ip.h"
+
+#define PX4_HPM_RESET_SIGNATURE_GPR 0
+
 #ifdef CONFIG_BOARDCTL_RESET
 
 /****************************************************************************
@@ -77,20 +82,8 @@ int board_configure_reset(reset_mode_e mode, uint32_t arg)
 	int rv = -1;
 
 	if (mode < arraySize(modes)) {
-
-// 		 stm32_pwr_enablebkp(true);
-
-// 		arg = mode == BOARD_RESET_MODE_CAN_BL ? arg & ~0xff : 0;
-
-// 		// Check if we can to use the new register definition
-
-// #ifndef STM32_RTC_BK0R
-// 		*(uint32_t *)STM32_BKP_BASE = modes[mode] | arg;
-// #else
-// 		*(uint32_t *)STM32_RTC_BK0R = modes[mode] | arg;
-// #endif
-// 		 stm32_pwr_enablebkp(false);
-// 		rv = OK;
+		arg = mode == BOARD_RESET_MODE_CAN_BL ? arg & ~0xff : 0;
+		rv = (bgpr_write32(HPM_BGPR, PX4_HPM_RESET_SIGNATURE_GPR, modes[mode] | arg) == status_success) ? OK : -EIO;
 	}
 
 	return rv;
@@ -126,7 +119,7 @@ int board_reset(int status)
 	board_on_reset(status);
 #endif
 
-	// up_systemreset();
+	up_systemreset();
 	return 0;
 }
 

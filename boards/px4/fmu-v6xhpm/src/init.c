@@ -243,6 +243,7 @@ hpm_boardinitialize(void)
  *   any failure to indicate the nature of the failure.
  ****************************************************************************/
 
+#if !defined(BOOTLOADER)
  __EXPORT int board_app_initialize(uintptr_t arg)
 {
 	printf("\n\nHPMicro PX4\n");
@@ -253,6 +254,7 @@ hpm_boardinitialize(void)
 	px4_platform_init();
 
 #ifdef CONFIG_HPM_USBDEV
+	hpm_usbinitialize();
 	hpm_usbdev_initialize(CONFIG_HPM_USBDEV_INSTANCE);
 #endif
 
@@ -290,4 +292,4 @@ void rc_input_invert(bool invert)
     trgm_output_config(HPM_TRGM2, HPM_TRGM2_OUTPUT_SRC_TRGM2_P8, &config);
     trgm_enable_io_output(HPM_TRGM2, 1 << 8);
 }
-
+#endif

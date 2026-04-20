@@ -123,6 +123,8 @@
 #define BOARD_NUM_IO_TIMERS         2
 #define DIRECT_PWM_OUTPUT_CHANNELS  4
 
+#define BOARD_HAS_ON_RESET 1
+
 /* Input Capture not supported */
 
 #define BOARD_HAS_NO_CAPTURE

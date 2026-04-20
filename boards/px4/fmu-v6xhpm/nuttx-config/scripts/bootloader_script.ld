@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 HPMicro
+ * Copyright (c) 2021-2026 HPMicro
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -11,7 +11,7 @@ HEAP2_SIZE = 128K;
 
 MEMORY
 {
-    FLASH (rx) : ORIGIN = 0x80040000, LENGTH = 4M - 256K
+    FLASH (rx) : ORIGIN = 0x80000000, LENGTH = 256K
     ILM (wx) : ORIGIN = 0x00000000, LENGTH = 256K
     DLM (w) : ORIGIN = 0x00080000, LENGTH = 256K
     AXI_SRAM (wx) : ORIGIN = 0x01080000, LENGTH = 1504K

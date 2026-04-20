@@ -51,6 +51,8 @@
 #include <nuttx/usb/usbdev.h>
 #include <nuttx/usb/usbdev_trace.h>
 
+#include <errno.h>
+
 #include <riscv_internal.h>
 
 #include "hpm_usb_drv.h"
@@ -120,6 +122,20 @@ void hpm_usbsuspend(FAR struct usbdev_s *dev, bool resume)
  *
  ************************************************************************************/
 int board_read_VBUS_state(void){
+	USB_Type *usb = HPM_USB0;
 
-	return 0;
+#if defined(CONFIG_HPM_USBDEV_INSTANCE) && (CONFIG_HPM_USBDEV_INSTANCE == 1)
+	usb = HPM_USB1;
+#endif
+
+	const uint32_t phy_status = usb->PHY_STATUS;
+	const uint32_t otg_status = usb->OTGSC;
+
+	if (USB_PHY_STATUS_VBUS_VALID_GET(phy_status) ||
+	    USB_OTGSC_AVV_GET(otg_status) ||
+	    USB_OTGSC_ASV_GET(otg_status)) {
+		return OK;
+	}
+
+	return -ENODEV;
 }

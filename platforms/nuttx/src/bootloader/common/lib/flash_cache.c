@@ -57,7 +57,7 @@ inline void fc_reset(void)
 		fcl_reset(&flash_cache[w]);
 	}
 
-	flash_cache[0].start_address = APP_LOAD_ADDRESS + APP_VECTOR_OFFSET;
+	flash_cache[0].start_address = (APP_LOAD_ADDRESS + APP_VECTOR_OFFSET) & FC_ADDRESS_MASK;
 }
 
 static inline flash_cache_line_t *fc_line_select(uintptr_t address)
