@@ -2,8 +2,10 @@
 #
 # PX4 FMUv6X specific board sensors init
 #------------------------------------------------------------------------------
+board_adc start
+
 icm42688p -R 6 -s start
 spl06 -I -b 3 -a 0x76 start
 
-# External compass on GPS1/I2C0 (the 3rd external bus): standard Holybro Pixhawk 4 or CUAV V5 GPS/compass puck (with lights, safety button, and buzzer)
-ist8310 -X -b 0 -R 10 start
+# External compass on GPS module through J5 I2C3
+ist8310 -X -b 3 -R 10 start

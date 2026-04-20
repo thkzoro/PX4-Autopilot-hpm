@@ -114,14 +114,9 @@ constexpr px4_spi_bus_t px4_spi_buses[SPI_BUS_MAX_BUS_ITEMS] = {
 #ifdef CONFIG_HPM_SPI2
 	initSPIBus(SPI::Bus::SPI2, {
 		initSPIDevice(SPIDEV_FLASH(0), SPI::CS{GPIO::PortB, GPIO::Pin24}),
+		initSPIDevice(DRV_IMU_DEVTYPE_ICM42688P, SPI::CS{GPIO::PortB, GPIO::Pin16}, SPI::DRDY{GPIO::PortD, GPIO::Pin19}),
 		// initSPIDevice(DRV_GYR_DEVTYPE_BMI088, SPI::CS{GPIO::PortC, GPIO::Pin8}, SPI::DRDY{GPIO::PortY, GPIO::Pin7}),
 		// initSPIDevice(DRV_ACC_DEVTYPE_BMI088, SPI::CS{GPIO::PortD, GPIO::Pin4}, SPI::DRDY{GPIO::PortY, GPIO::Pin6}),
-	}),
-#endif
-#ifdef CONFIG_HPM_SPI3
-	initSPIBus(SPI::Bus::SPI3, {
-		initSPIDevice(DRV_IMU_DEVTYPE_ICM42688P, SPI::CS{GPIO::PortB, GPIO::Pin29}, SPI::DRDY{GPIO::PortD, GPIO::Pin19}),
-		// initSPIDevice(DRV_IMU_DEVTYPE_ICM42688P, SPI::CS{GPIO::PortB, GPIO::Pin29}),
 	}),
 #endif
 
