@@ -24,4 +24,6 @@
 # 	param set-default UXRCE_DDS_PTCFG 2
 # fi
 
+tone_alarm start
+rgbled_pwm start
 safety_button start
