@@ -25,5 +25,4 @@
 # fi
 
 tone_alarm start
-rgbled_pwm start
 safety_button start

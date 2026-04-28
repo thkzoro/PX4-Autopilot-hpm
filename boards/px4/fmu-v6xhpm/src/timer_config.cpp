@@ -43,7 +43,7 @@ constexpr timer_io_channels_t timer_io_channels[MAX_TIMER_IO_CHANNELS] = {
 	initIOTimerChannel(io_timers, {Timer::PWM3, Timer::Channel0}, {GPIO::PortE, GPIO::Pin2}, Timer::TRGM_NotUsed),
 	initIOTimerChannel(io_timers, {Timer::PWM3, Timer::Channel1}, {GPIO::PortE, GPIO::Pin7}, Timer::TRGM_NotUsed),
 	initIOTimerChannel(io_timers, {Timer::PWM3, Timer::Channel2}, {GPIO::PortE, GPIO::Pin6}, Timer::TRGM_NotUsed),
-	initIOTimerChannel(io_timers, {Timer::PWM2, Timer::Channel7}, {GPIO::PortE, GPIO::Pin1}, Timer::TRGM_NotUsed),
+	initIOTimerChannel(io_timers, {Timer::PWM2, Timer::Channel3}, {GPIO::PortE, GPIO::Pin3}, Timer::TRGM_NotUsed),
 };
 
 constexpr io_timers_channel_mapping_t io_timers_channel_mapping =
