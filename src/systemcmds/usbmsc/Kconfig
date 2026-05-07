@@ -1,0 +1,6 @@
+menuconfig SYSTEMCMDS_USBMSC
+	bool "usbmsc"
+	default n
+	---help---
+		Enable USB Mass Storage control command.
+		This allows the TF/microSD card to be exposed as a USB drive to the host PC.

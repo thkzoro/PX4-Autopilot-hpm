@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2016, 2019, 2023 PX4 Development Team. All rights reserved.
+#   Copyright (c) 2026 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,47 +31,12 @@
 #
 ############################################################################
 
-if("${PX4_BOARD_LABEL}" STREQUAL  "bootloader")
-	add_compile_definitions(BOOTLOADER)
-	add_library(drivers_board
-		init.c
-		usb.c
-	)
-	target_link_libraries(drivers_board
-		PRIVATE
-			arch_board_romapi
-			nuttx_arch
-			nuttx_drivers
-			px4_layer
-			bootloader
-	)
-	target_include_directories(drivers_board PRIVATE ${PX4_SOURCE_DIR}/platforms/nuttx/src/bootloader/common)
-
-else()
-	px4_add_library(drivers_board
-		init.c
-		i2c.cpp
-		mtd.cpp
-		spi.cpp
-		timer_config.cpp
-		usb.c
-		usbmsc.c
-		sdhc.c
-		can.c
-		#xpi_fram.c
-		#xpi_nor_flash.c
-		${SRCS}
-	)
-
-	target_link_libraries(drivers_board
-		PRIVATE
-			arch_io_pins
-			#arch_board_hw_info
-			arch_board_romapi
-			arch_spi
-			drivers__led # drv_led_start
-			nuttx_arch # sdio
-			nuttx_drivers # sdio
-			px4_layer
-	)
-endif()
+px4_add_module(
+	MODULE systemcmds__usbmsc
+	MAIN usbmsc
+	COMPILE_FLAGS
+	SRCS
+		usbmsc.cpp
+	DEPENDS
+		px4_platform
+)
