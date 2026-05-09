@@ -297,9 +297,8 @@
         },
         {
             "label": "Launch OpenOCD",
-            "command": "sudo",
+            "command": "/home/book/programs/Toolchain/openocd-linux/bin/openocd",
             "args": [
-                "/usr/bin/openocd",
                 "-s",
                 "${HPM_SDK_BASE}/boards/openocd",
                 "-f",
@@ -315,6 +314,67 @@
             "isBackground": true,
             "problemMatcher": []
         },
+        {
+            "label": "OpenOCD FT2232 PX4 v6XHPM",
+            "command": "/home/book/programs/Toolchain/openocd-linux/bin/openocd",
+            "args": [
+                "-s",
+                "${workspaceFolder}/platforms/nuttx/NuttX/nuttx/arch/risc-v/src/hpmicro/hpm_sdk/boards/openocd",
+                "-f",
+                "probes/ft2232.cfg",
+                "-f",
+                "soc/hpm6750-single-core-defer.cfg",
+                "-f",
+                "boards/px4_fmu_v6xhpm.cfg",
+                "-c",
+                "adapter speed 1000"
+            ],
+            "type": "shell",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "^(.*)$",
+                    "message": 1
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "Listening on port 3333 for gdb connections"
+                }
+            }
+        },
+        {
+            "label": "Console FT2232 UART",
+            "type": "shell",
+            "command": "sudo",
+            "args": [
+                "picocom",
+                "-b",
+                "115200",
+                "${input:uart.device}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": false
+            },
+            "problemMatcher": []
+        }
     ],
     "inputs": [
         {
@@ -357,6 +417,7 @@
             "type": "pickString",
             "description": "Select the config2 for OpenOCD",
             "options": [
+                "${HPM_SDK_BASE}/boards/openocd/boards/px4_fmu_v6xhpm.cfg",
                 "${HPM_SDK_BASE}/boards/openocd/boards/hpm6750evk2.cfg",
                 "${HPM_SDK_BASE}/boards/openocd/boards/hpm5300evk.cfg",
                 "${HPM_SDK_BASE}/boards/openocd/boards/hpm6200evk.cfg",
@@ -365,6 +426,12 @@
                 "${HPM_SDK_BASE}/boards/openocd/boards/hpm6e00evk.cfg",
             ],
             "default": "${HPM_SDK_BASE}/boards/openocd/boards/hpm6750evk2.cfg",
+        },
+        {
+            "id": "uart.device",
+            "type": "promptString",
+            "description": "FT2232 console UART device",
+            "default": "/dev/ttyUSB1"
         }
     ]
 }

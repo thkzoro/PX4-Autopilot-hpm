@@ -43,9 +43,11 @@
 #include <px4_platform_common/px4_config.h>
 #include <px4_platform_common/shutdown.h>
 
+#include <board_config.h>
 #include <nuttx/usb/usbmsc.h>
 #include <sys/boardctl.h>
 
+#include <parameters/param.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
@@ -98,20 +100,25 @@ void stop_usb_services()
 
 	char *serdis_argv[] = {const_cast<char *>("serdis"), nullptr};
 	(void)serdis_main(1, serdis_argv);
-	px4_usleep(100 * 1000);
+	px4_usleep(300 * 1000);
+
+#ifdef BOARD_HAS_USB_CONNECT_TOGGLE
+	board_usb_set_connected(false);
+	px4_usleep(1000 * 1000);
+#endif
 }
 
 void stop_sd_services()
 {
 	PX4_INFO("stopping SD card users");
 
-	char *logger_argv[] = {const_cast<char *>("logger"), const_cast<char *>("off"), nullptr};
+	char *logger_argv[] = {const_cast<char *>("logger"), const_cast<char *>("stop"), nullptr};
 	(void)logger_main(2, logger_argv);
-	px4_usleep(100 * 1000);
+	px4_usleep(300 * 1000);
 
 	char *dataman_argv[] = {const_cast<char *>("dataman"), const_cast<char *>("stop"), nullptr};
 	(void)dataman_main(2, dataman_argv);
-	px4_usleep(100 * 1000);
+	px4_usleep(200 * 1000);
 }
 
 int unmount_sd()
@@ -128,6 +135,19 @@ int unmount_sd()
 		return 0;
 	}
 
+	if (errno == EBUSY) {
+		PX4_WARN("umount %s busy, forcing unmount", MICROSD_MOUNT_PATH);
+		ret = umount2(MICROSD_MOUNT_PATH, MNT_FORCE);
+
+		if (ret == 0) {
+			PX4_INFO("forced unmount of %s succeeded", MICROSD_MOUNT_PATH);
+			return 0;
+		}
+
+		PX4_ERR("forced umount %s failed (%d)", MICROSD_MOUNT_PATH, errno);
+		return -1;
+	}
+
 	PX4_ERR("umount %s failed (%d)", MICROSD_MOUNT_PATH, errno);
 	return -1;
 }
@@ -141,6 +161,7 @@ int start_usbmsc()
 
 	stop_usb_services();
 	stop_sd_services();
+	param_control_autosave(false);
 
 	if (unmount_sd() != 0) {
 		return -1;
@@ -173,6 +194,14 @@ int start_usbmsc()
 	}
 
 	g_connected = true;
+
+#ifdef BOARD_HAS_USB_CONNECT_TOGGLE
+	board_usb_set_connected(false);
+	px4_usleep(300 * 1000);
+	board_usb_set_connected(true);
+	px4_usleep(500 * 1000);
+#endif
+
 	PX4_INFO("USB mass storage started");
 	PX4_INFO("replug USB if the host does not enumerate immediately");
 	return 0;

@@ -2,41 +2,152 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(cppdbg px4 fmu-v6xhpm) Launch",
+            "name": "PX4 v6XHPM Bootloader (FT2232/OpenOCD)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
+            "program": "${workspaceFolder}/build/px4_fmu-v6xhpm_bootloader/px4_fmu-v6xhpm_bootloader.elf",
             "args": [],
-            "targetArchitecture": "arm",
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/home/chenzhihong/Toolchain/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin/riscv32-unknown-elf-gdb",
+            "miDebuggerPath": "riscv32-unknown-elf-gdb",
             "miDebuggerServerAddress": "localhost:3333",
+            "preLaunchTask": "OpenOCD FT2232 PX4 v6XHPM",
             "setupCommands": [
                 {
-                    "text": "-enable-pretty-printing",
+                    "text": "-enable-pretty-printing"
                 },
+                {
+                    "text": "set pagination off"
+                }
             ],
             "customLaunchSetupCommands": [
                 {
-                    "text": "target remote localhost:3333",
+                    "text": "target extended-remote localhost:3333"
+                },
+                {
+                    "text": "file ${workspaceFolder}/build/px4_fmu-v6xhpm_bootloader/px4_fmu-v6xhpm_bootloader.elf"
+                },
+                {
+                    "text": "load"
+                },
+                {
+                    "text": "tbreak bootloader_main"
+                },
+                {
+                    "text": "monitor reset run"
+                }
+            ],
+            "launchCompleteCommand": "exec-continue"
+        },
+        {
+            "name": "PX4 v6XHPM Default (FT2232/OpenOCD)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "riscv32-unknown-elf-gdb",
+            "miDebuggerServerAddress": "localhost:3333",
+            "preLaunchTask": "OpenOCD FT2232 PX4 v6XHPM",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing"
+                },
+                {
+                    "text": "set pagination off"
+                }
+            ],
+            "customLaunchSetupCommands": [
+                {
+                    "text": "target extended-remote localhost:3333"
                 },
                 {
                     "text": "file ${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf"
                 },
                 {
-                    "text": "tb __hpm_start",
+                    "text": "load"
                 },
                 {
-                    "text": "mon reset halt",
+                    "text": "tbreak __hpm_start"
                 },
                 {
-                    "text": "load",
-                },
+                    "text": "monitor reset run"
+                }
             ],
+            "launchCompleteCommand": "exec-continue"
+        },
+        {
+            "name": "PX4 v6XHPM Attach (OpenOCD running)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "riscv32-unknown-elf-gdb",
+            "miDebuggerServerAddress": "localhost:3333",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing"
+                },
+                {
+                    "text": "set pagination off"
+                }
+            ],
+            "customLaunchSetupCommands": [
+                {
+                    "text": "target extended-remote localhost:3333"
+                },
+                {
+                    "text": "file ${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf"
+                }
+            ]
+        },
+        {
+            "name": "(cppdbg px4 fmu-v6xhpm) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "riscv32-unknown-elf-gdb",
+            "miDebuggerServerAddress": "localhost:3333",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing"
+                }
+            ],
+            "customLaunchSetupCommands": [
+                {
+                    "text": "target extended-remote localhost:3333"
+                },
+                {
+                    "text": "file ${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf"
+                },
+                {
+                    "text": "tb __hpm_start"
+                },
+                {
+                    "text": "load"
+                },
+                {
+                    "text": "monitor reset run"
+                }
+            ]
         },
         {
             "name": "(cppdbg px4 fmu-v6xhpm-siyi) Launch",
@@ -44,36 +155,35 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/px4_fmu-v6xhpm-siyi_default/px4_fmu-v6xhpm-siyi_default.elf",
             "args": [],
-            "targetArchitecture": "arm",
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/home/chenzhihong/Toolchain/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin/riscv32-unknown-elf-gdb",
+            "miDebuggerPath": "riscv32-unknown-elf-gdb",
             "miDebuggerServerAddress": "localhost:3333",
             "setupCommands": [
                 {
-                    "text": "-enable-pretty-printing",
-                },
+                    "text": "-enable-pretty-printing"
+                }
             ],
             "customLaunchSetupCommands": [
                 {
-                    "text": "target remote localhost:3333",
+                    "text": "target extended-remote localhost:3333"
                 },
                 {
                     "text": "file ${workspaceFolder}/build/px4_fmu-v6xhpm-siyi_default/px4_fmu-v6xhpm-siyi_default.elf"
                 },
                 {
-                    "text": "tb __hpm_start",
+                    "text": "tb __hpm_start"
                 },
                 {
-                    "text": "mon reset halt",
+                    "text": "load"
                 },
                 {
-                    "text": "load",
-                },
-            ],
+                    "text": "monitor reset run"
+                }
+            ]
         },
         {
             "name": "Debug with Remote GDB Server",
@@ -90,25 +200,23 @@
             "showDevDebugTimestamps": "raw",
             // "svdFile": "${workspaceFolder}/soc/HPM6750/HPM6750_svd.xml"
             "gdbPath": "riscv32-unknown-elf-gdb",
-            "preLaunchTask": "Launch OpenOCD",
+            "preLaunchTask": "OpenOCD FT2232 PX4 v6XHPM"
         },
         {
-        "cwd": "${workspaceFolder}",
-        "executable": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
-        "gdbPath": "/home/rcsn/lrc/toolchains/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin/riscv32-unknown-elf-gdb",
-        "armToolchainPath": "/home/rcsn/lrc/toolchains/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin",
-        "toolchainPrefix":"riscv32-unknown-elf-",
-        "serverpath": "/opt/SEGGER/JLink_V914a/JLinkGDBServerCLExe",
-        "name": "Debug with JLink",
-        "request": "launch",
-        "type": "cortex-debug",
-        "device": "HPM6750xVMx",
-        // "runToEntryPoint": "main",
-        "showDevDebugOutput": "raw",
-        "interface": "jtag",
-        "servertype": "jlink",
-        // "svdFile": "${workspaceFolder}/soc/HPM5361/HPM5361_svd.xml"
-        // "svdFile": "${workspaceFolder}/soc/HPM6700/HPM6750/HPM6750_svd.xml"
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/px4_fmu-v6xhpm_default/px4_fmu-v6xhpm_default.elf",
+            "gdbPath": "/home/rcsn/lrc/toolchains/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin/riscv32-unknown-elf-gdb",
+            "armToolchainPath": "/home/rcsn/lrc/toolchains/rv32imac_zicsr_zifencei_multilib_b_ext-linux/bin",
+            "toolchainPrefix": "riscv32-unknown-elf-",
+            "serverpath": "/opt/SEGGER/JLink_V914a/JLinkGDBServerCLExe",
+            "name": "Debug with JLink",
+            "request": "launch",
+            "type": "cortex-debug",
+            "device": "HPM6750xVMx",
+            // "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw",
+            "interface": "jtag",
+            "servertype": "jlink"
         }
-    ],
+    ]
 }

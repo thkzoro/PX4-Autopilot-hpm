@@ -7,12 +7,10 @@
 #define USB0_DEV       0x01
 
 /*
- * Reserve the first 256 KB of flash for the PX4 bootloader image.
- * The app image keeps the HPM boot header at APP_LOAD_ADDRESS + 0x1000
- * and uses the fw_info_table.reserved1 word (offset 0x1014) as the
- * deferred "first word" that marks a complete upload.
+ * Temporary direct-boot layout for JTAG/OpenOCD bring-up.
+ * App is linked from flash base so the chip can boot without a PX4 bootloader.
  */
-#define APP_LOAD_ADDRESS               0x80040000
+#define APP_LOAD_ADDRESS               0x80000000
 #define APP_VECTOR_OFFSET              0x1014
 #define BOOT_DELAY_ADDRESS             0x1020
 #define BOOTLOADER_DELAY               5000

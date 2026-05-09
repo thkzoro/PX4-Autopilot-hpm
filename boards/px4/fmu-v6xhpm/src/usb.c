@@ -52,6 +52,7 @@
 #include <nuttx/usb/usbdev_trace.h>
 
 #include <errno.h>
+#include <unistd.h>
 
 #include <riscv_internal.h>
 
@@ -90,6 +91,27 @@ int hpm_usbpullup(FAR struct usbdev_s *dev, bool enable)
 {
 
 	return OK;
+}
+
+__EXPORT
+void board_usb_set_connected(bool enable)
+{
+	USB_Type *usb = HPM_USB0;
+
+#if defined(CONFIG_HPM_USBDEV_INSTANCE) && (CONFIG_HPM_USBDEV_INSTANCE == 1)
+	usb = HPM_USB1;
+#endif
+
+	irqstate_t flags = enter_critical_section();
+
+	if (enable) {
+		usb_dcd_connect(usb);
+
+	} else {
+		usb_dcd_disconnect(usb);
+	}
+
+	leave_critical_section(flags);
 }
 
 /************************************************************************************

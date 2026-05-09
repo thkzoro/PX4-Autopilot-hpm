@@ -57,6 +57,17 @@ void board_i2cbus_clear(uint32_t gpio_sda, uint32_t gpio_clk)
     px4_arch_configgpio(gpio_sda);
     px4_arch_configgpio(gpio_clk);
 
+    /* Release both lines high before and after the recovery pulses.
+     * On HPM open-drain GPIO, leaving the output latch at 0 can keep the
+     * bus pinned low after switching back to the I2C alternate function.
+     */
+    px4_arch_gpiowrite(gpio_sda, 1);
+    px4_arch_gpiowrite(gpio_clk, 1);
+
+    for (uint32_t j = 0; j < 5000; j++) {
+        __asm__ volatile("nop");
+    }
+
     for (uint32_t i = 0; i < 9; i++) {
         px4_arch_gpiowrite(gpio_clk, 1);
         for (uint32_t j = 0; j < 5000; j++) {
@@ -66,6 +77,13 @@ void board_i2cbus_clear(uint32_t gpio_sda, uint32_t gpio_clk)
         for (uint32_t j = 0; j < 5000; j++) {
             __asm__ volatile("nop");
         }
+    }
+
+    px4_arch_gpiowrite(gpio_sda, 1);
+    px4_arch_gpiowrite(gpio_clk, 1);
+
+    for (uint32_t j = 0; j < 5000; j++) {
+        __asm__ volatile("nop");
     }
 
     px4_arch_unconfiggpio(gpio_sda);

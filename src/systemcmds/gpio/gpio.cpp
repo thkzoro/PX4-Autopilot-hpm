@@ -197,6 +197,12 @@ int handle_board_ports(bool is_read, int argc, char *argv[])
 	} else if ('a' <= port && port <= 'k') {
 		mask |= ((port - 'a') << GPIO_PORT_SHIFT) & GPIO_PORT_MASK;
 
+	} else if ('X' <= port && port <= 'Z') {
+		mask |= ((port - 'X' + 13) << GPIO_PORT_SHIFT) & GPIO_PORT_MASK;
+
+	} else if ('x' <= port && port <= 'z') {
+		mask |= ((port - 'x' + 13) << GPIO_PORT_SHIFT) & GPIO_PORT_MASK;
+
 	} else {
 		usage("invalid port");
 		return -1;

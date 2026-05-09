@@ -109,3 +109,12 @@ src/systemcmds/topic_listener/listener_generated.cpp
 # colcon
 log/
 keys/
+
+
+#AI
+.codex
+sessions*
+docs/DIY先楫飞控
+*_bootloader.bin
+hardware/hpm6750_btb_flight_adapter/hpm6750_btb_flight_adapter-backups/
+hardware/hpm6750_btb_flight_adapter/
