@@ -76,14 +76,17 @@ __BEGIN_DECLS
 #define PX4_CPU_UUID_WORD32_FORMAT_SIZE         (PX4_CPU_UUID_WORD32_LENGTH-1+(2*PX4_CPU_UUID_BYTE_LENGTH)+1)
 #define PX4_CPU_MFGUID_FORMAT_SIZE              ((2*PX4_CPU_MFGUID_BYTE_LENGTH)+1)
 
-/* HPM I2C/SPI controller numbering is zero based in the NuttX lower half.
- * Keep the PX4-facing bus numbering 1 based to match the rest of the device
- * framework and translate when touching the architecture drivers.
+/* HPM I2C controller numbering is zero based in the NuttX lower half.
+ * Keep the PX4-facing I2C bus numbering 1 based to match the rest of the
+ * device framework and translate when touching the I2C architecture driver.
+ *
+ * SPI on HPM already uses the board-defined zero-based bus numbers end-to-end,
+ * so do not translate SPI bus numbers here.
  */
 #define PX4_BUS_OFFSET       1
 
 #if defined(CONFIG_SPI)
-#define px4_spibus_initialize(bus_num_1based)   hpm_spibus_initialize(PX4_BUS_NUMBER_FROM_PX4(bus_num_1based))
+#define px4_spibus_initialize(bus_num_1based)   hpm_spibus_initialize(bus_num_1based)
 #endif
 
 #if defined(CONFIG_I2C)
