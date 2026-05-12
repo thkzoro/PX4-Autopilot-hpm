@@ -14,5 +14,5 @@ echo "[board_sensors] spl06 start: PX4 external I2C bus 4 -> physical I2C3, addr
 spl06 -X -b 4 -a 0x76 start
 
 # External compass on GPS module through J5 physical I2C3 / PX4 external bus 4
-echo "[board_sensors] ist8310 start: PX4 external I2C bus 4 -> physical I2C3, SCL=PF10(J5-6), SDA=PY05(J5-11)"
-ist8310 -X -b 4 -R 10 start
+echo "[board_sensors] ist8310 start: PX4 external I2C bus 4 -> physical I2C3, addr=0x0F, SCL=PF10(J5-6), SDA=PY05(J5-11)"
+ist8310 -X -b 4 -a 0x0f -R 10 start
