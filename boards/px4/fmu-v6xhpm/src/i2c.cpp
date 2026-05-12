@@ -34,7 +34,27 @@
 #include <px4_arch/i2c_hw_description.h>
 #include <drivers/drv_hrt.h>
 
+#include <stdio.h>
+
+#include "hpm_soc.h"
+#include "hpm_gpio_drv.h"
+#include "hpm_i2c_drv.h"
+
 #if defined(CONFIG_I2C)
+
+static void hpm_i2c3_log_gpio_state(const char *tag)
+{
+	HPM_IOC->PAD[IOC_PAD_PF10].FUNC_CTL = IOC_PF10_FUNC_CTL_GPIO_F_10;
+	HPM_IOC->PAD[IOC_PAD_PY05].FUNC_CTL = IOC_PY05_FUNC_CTL_GPIO_Y_05;
+	HPM_PIOC->PAD[IOC_PAD_PY05].FUNC_CTL = PIOC_PY05_FUNC_CTL_SOC_PY_05;
+
+	gpio_set_pin_input(HPM_GPIO0, GPIO_DI_GPIOF, 10);
+	gpio_set_pin_input(HPM_GPIO0, GPIO_DI_GPIOY, 5);
+
+	printf("[board_i2c] I2C3 %s: gpio SCL=%u SDA=%u\n", tag,
+	       gpio_read_pin(HPM_GPIO0, GPIO_DI_GPIOF, 10),
+	       gpio_read_pin(HPM_GPIO0, GPIO_DI_GPIOY, 5));
+}
 
 /****************************************************************************
  * Name: board_i2cbus_clear
@@ -129,9 +149,24 @@ int hpm_i2cbus_pins_init(int port)
 			break;
 		case 3:
 #if defined(CONFIG_HPM_I2C3)
-			board_i2cbus_clear(GPIO_I2C3_SDA_GPIO, GPIO_I2C3_SCL_GPIO);
-			px4_arch_configgpio(GPIO_I2C3_SCL);
-			px4_arch_configgpio(GPIO_I2C3_SDA);
+			hpm_i2c3_log_gpio_state("before-pinmux");
+
+			/* Match the standalone HPM6750 I2C3 sensor probe exactly: PF10 is
+			 * SCL, PY05 is SDA, and PY05 must be routed from the PY power
+			 * domain to the SoC domain through PIOC.
+			 */
+			HPM_IOC->PAD[IOC_PAD_PF10].FUNC_CTL = IOC_PF10_FUNC_CTL_I2C3_SCL
+							      | IOC_PAD_FUNC_CTL_LOOP_BACK_MASK;
+			HPM_IOC->PAD[IOC_PAD_PF10].PAD_CTL = IOC_PAD_PAD_CTL_OD_SET(1);
+
+			HPM_IOC->PAD[IOC_PAD_PY05].FUNC_CTL = IOC_PY05_FUNC_CTL_I2C3_SDA
+							      | IOC_PAD_FUNC_CTL_LOOP_BACK_MASK;
+			HPM_PIOC->PAD[IOC_PAD_PY05].FUNC_CTL = PIOC_PY05_FUNC_CTL_SOC_PY_05;
+			HPM_IOC->PAD[IOC_PAD_PY05].PAD_CTL = IOC_PAD_PAD_CTL_OD_SET(1);
+
+			printf("[board_i2c] I2C3 after-pinmux: line SCL=%u SDA=%u\n",
+			       i2c_get_line_scl_status(HPM_I2C3),
+			       i2c_get_line_sda_status(HPM_I2C3));
 #endif
 			break;
 	}
@@ -140,8 +175,8 @@ int hpm_i2cbus_pins_init(int port)
 }
 
 constexpr px4_i2c_bus_t px4_i2c_buses[I2C_BUS_MAX_BUS_ITEMS] = {
-	initI2CBusExternal(3),
-	initI2CBusInternal(0),
+	initI2CBusExternal(PX4_BUS_NUMBER_TO_PX4(3)),
+	initI2CBusInternal(PX4_BUS_NUMBER_TO_PX4(0)),
 };
 
 

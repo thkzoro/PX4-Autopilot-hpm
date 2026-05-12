@@ -144,20 +144,14 @@ void hpm_usbsuspend(FAR struct usbdev_s *dev, bool resume)
  *
  ************************************************************************************/
 int board_read_VBUS_state(void){
-	USB_Type *usb = HPM_USB0;
-
-#if defined(CONFIG_HPM_USBDEV_INSTANCE) && (CONFIG_HPM_USBDEV_INSTANCE == 1)
-	usb = HPM_USB1;
-#endif
-
-	const uint32_t phy_status = usb->PHY_STATUS;
-	const uint32_t otg_status = usb->OTGSC;
-
-	if (USB_PHY_STATUS_VBUS_VALID_GET(phy_status) ||
-	    USB_OTGSC_AVV_GET(otg_status) ||
-	    USB_OTGSC_ASV_GET(otg_status)) {
-		return OK;
-	}
-
-	return -ENODEV;
+	/*
+	 * The HPM6750 USB VBUS status bits are not stable enough on this board
+	 * for PX4's CDC/ACM autostart state machine.  Spurious VBUS drops cause
+	 * repeated serdis/sercon cycles and Windows re-enumeration loops.
+	 *
+	 * This board is already treated as USB-powered in board_config.h, so
+	 * report VBUS present here as well and let the physical cable state be
+	 * handled by the USB controller and host.
+	 */
+	return OK;
 }

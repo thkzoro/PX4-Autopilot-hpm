@@ -68,6 +68,10 @@ extern "C" int serdis_main(int argc, char *argv[]);
 # define CONFIG_SYSTEM_USBMSC_NLUNS 1
 #endif
 
+#ifndef BOARD_USBMSC_START_SECTOR
+# define BOARD_USBMSC_START_SECTOR 0
+#endif
+
 namespace
 {
 
@@ -175,7 +179,10 @@ int start_usbmsc()
 		return -1;
 	}
 
-	ret = usbmsc_bindlun(g_msc_handle, CONFIG_SYSTEM_USBMSC_DEVPATH1, 0, 0, 0, false);
+	PX4_INFO("binding %s as USB MSC LUN0 start_sector=%ld",
+		 CONFIG_SYSTEM_USBMSC_DEVPATH1, (long)BOARD_USBMSC_START_SECTOR);
+	ret = usbmsc_bindlun(g_msc_handle, CONFIG_SYSTEM_USBMSC_DEVPATH1, 0,
+			     BOARD_USBMSC_START_SECTOR, 0, false);
 
 	if (ret < 0) {
 		PX4_ERR("usbmsc_bindlun failed: %d", ret);
@@ -234,6 +241,7 @@ void status_usbmsc()
 {
 	PX4_INFO("USB MSC: %s", g_connected ? "running" : "stopped");
 	PX4_INFO("device: %s", CONFIG_SYSTEM_USBMSC_DEVPATH1);
+	PX4_INFO("start sector: %ld", (long)BOARD_USBMSC_START_SECTOR);
 }
 
 } // namespace

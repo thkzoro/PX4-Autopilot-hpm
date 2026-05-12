@@ -109,7 +109,7 @@ spl06_main(int argc, char *argv[])
 	BusCLIArguments cli{true, true};
 #if defined(CONFIG_I2C)
 	cli.i2c_address = 0x76;
-	cli.default_i2c_frequency = 100 * 1000;
+	cli.default_i2c_frequency = 400 * 1000;
 #endif // CONFIG_I2C
 #if defined(CONFIG_SPI)
 	cli.default_spi_frequency = 10 * 1000 * 1000;

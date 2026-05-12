@@ -160,7 +160,7 @@ void CdcAcmAutostart::run_state_machine()
 void CdcAcmAutostart::state_connected()
 {
 	if (!_vbus_present && !_vbus_present_prev && (_active_protocol == UsbProtocol::mavlink)) {
-		PX4_DEBUG("lost vbus!");
+		PX4_WARN("USB autostart: connected -> disconnecting (lost vbus)");
 		sched_lock();
 		static const char app[] {"mavlink"};
 		static const char *stop_argv[] {"mavlink", "stop", "-d", USB_DEVICE_PATH, NULL};
@@ -173,11 +173,11 @@ void CdcAcmAutostart::state_connected()
 void CdcAcmAutostart::state_disconnected()
 {
 	if (_vbus_present && _vbus_present_prev) {
-		PX4_DEBUG("starting sercon");
+		PX4_INFO("USB autostart: disconnected -> connecting (sercon)");
 
 		if (sercon_main(0, nullptr) == EXIT_SUCCESS) {
 			_state = UsbAutoStartState::connecting;
-			PX4_DEBUG("state connecting");
+			PX4_INFO("USB autostart: state connecting");
 			_reschedule_time = 1_s;
 		}
 
@@ -196,17 +196,17 @@ void CdcAcmAutostart::state_connecting()
 #endif
 
 	if (!_vbus_present) {
-		PX4_DEBUG("No VBUS");
+		PX4_WARN("USB autostart: connecting failed, no VBUS");
 		goto fail;
 	}
 
 	if (_ttyacm_fd < 0) {
-		PX4_DEBUG("opening port");
+		PX4_INFO("USB autostart: opening %s", USB_DEVICE_PATH);
 		_ttyacm_fd = px4_open(USB_DEVICE_PATH, O_RDONLY | O_NONBLOCK);
 	}
 
 	if (_ttyacm_fd < 0) {
-		PX4_DEBUG("can't open port");
+		PX4_WARN("USB autostart: open %s failed", USB_DEVICE_PATH);
 		// fail silently and keep trying to open the port
 		return;
 	}
@@ -215,10 +215,12 @@ void CdcAcmAutostart::state_connecting()
 		PX4_INFO("Starting mavlink on %s (SYS_USB_AUTO=2)", USB_DEVICE_PATH);
 
 		if (start_mavlink()) {
+			PX4_INFO("USB autostart: mavlink started on %s", USB_DEVICE_PATH);
 			_state = UsbAutoStartState::connected;
 			_active_protocol = UsbProtocol::mavlink;
 
 		} else {
+			PX4_WARN("USB autostart: mavlink start failed on %s", USB_DEVICE_PATH);
 			_state = UsbAutoStartState::disconnecting;
 			_reschedule_time = 100_ms;
 		}
@@ -328,7 +330,7 @@ void CdcAcmAutostart::state_connecting()
 	return;
 
 fail:
-	PX4_DEBUG("fail...");
+	PX4_WARN("USB autostart: connecting -> disconnecting");
 
 	// VBUS not present, open failed
 	if (_ttyacm_fd >= 0) {
@@ -341,7 +343,7 @@ fail:
 
 void CdcAcmAutostart::state_disconnecting()
 {
-	PX4_DEBUG("state_disconnecting");
+	PX4_WARN("USB autostart: disconnecting -> disconnected");
 
 	if (_ttyacm_fd > 0) {
 		px4_close(_ttyacm_fd);

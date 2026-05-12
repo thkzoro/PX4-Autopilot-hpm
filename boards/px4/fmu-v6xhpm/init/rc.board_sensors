@@ -9,10 +9,10 @@ board_adc start
 echo "[board_sensors] icm42688p start: SPI2, CS=PB16(J5-33), DRDY=PD19(J5-35)"
 icm42688p -R 6 -s start
 
-# SPL06: I2C3 on J5-6/J5-11, addr 0x76
-echo "[board_sensors] spl06 start: I2C3(bus 3), addr=0x76, SCL=PF10(J5-6), SDA=PY05(J5-11)"
-spl06 -I -b 3 -a 0x76 start
+# SPL06: physical I2C3 on J5-6/J5-11, exposed to PX4 as external bus 4
+echo "[board_sensors] spl06 start: PX4 external I2C bus 4 -> physical I2C3, addr=0x76, SCL=PF10(J5-6), SDA=PY05(J5-11)"
+spl06 -X -b 4 -a 0x76 start
 
-# External compass on GPS module through J5 I2C3
-echo "[board_sensors] ist8310 start: I2C3(bus 3), external compass on GPS module, SCL=PF10(J5-6), SDA=PY05(J5-11)"
-ist8310 -X -b 3 -R 10 start
+# External compass on GPS module through J5 physical I2C3 / PX4 external bus 4
+echo "[board_sensors] ist8310 start: PX4 external I2C bus 4 -> physical I2C3, SCL=PF10(J5-6), SDA=PY05(J5-11)"
+ist8310 -X -b 4 -R 10 start
